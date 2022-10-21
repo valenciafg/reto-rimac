@@ -8,8 +8,23 @@ provider:
   runtime: nodejs12.x
   region: us-east-1
   environment:
-    SWAPI_BASE_URL: https://swapi.py4e.com/api 
-
+    SWAPI_BASE_URL: https://swapi.py4e.com/api
+    PELICULAS_TABLE: PeliculasTable
+    PLANETAS_TABLE: PlanetasTable
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - 'dynamodb:GetItem'
+            - 'dynamodb:Scan'
+            - 'dynamodb:Query'
+            - "dynamodb:PutItem"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:DeleteItem"
+          Resource:
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PELICULAS_TABLE}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PLANETAS_TABLE}"
 
 functions:
   loadData:
@@ -18,3 +33,60 @@ functions:
       - http:
           method: post
           path: cargarDatosSWAPI
+  obtenerPeliculas:
+    handler: handler.obtenerPeliculas
+    events:
+      - http:
+          method: get
+          path: obtenerPeliculas
+  obtenerPelicula:
+    handler: handler.obtenerPelicula
+    events:
+      - http:
+          method: get
+          path: obtenerPelicula/{id}
+  obtenerPlanetas:
+    handler: handler.obtenerPlanetas
+    events:
+      - http:
+          method: get
+          path: obtenerPlanetas
+  obtenerPlaneta:
+    handler: handler.obtenerPlaneta
+    events:
+      - http:
+          method: get
+          path: obtenerPlaneta/{id}
+
+resources:
+  Resources:
+    PeliculasTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+        KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.PELICULAS_TABLE}
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
+    PlanetasTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+        KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.PLANETAS_TABLE}
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
