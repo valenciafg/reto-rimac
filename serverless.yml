@@ -102,5 +102,3 @@ resources:
         TableName: ${self:provider.environment.PLANETAS_TABLE}
         StreamSpecification:
           StreamViewType: NEW_IMAGE
-plugins:
-  - serverless-auto-swagger
