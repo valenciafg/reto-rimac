@@ -69,6 +69,8 @@ const registrarPlanetas = async (planetas) => {
 }
 
 module.exports = {
+    guardarPelicula,
+    guardarPlaneta,
     registrarPeliculas,
     registrarPlanetas,
     obtenerPelicula,

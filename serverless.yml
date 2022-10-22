@@ -57,6 +57,18 @@ functions:
       - http:
           method: get
           path: obtenerPlaneta/{id}
+  registrarPelicula:
+    handler: handler.registrarPelicula
+    events:
+      - http:
+          method: post
+          path: registrarPelicula
+  registrarPlaneta:
+    handler: handler.registrarPlaneta
+    events:
+      - http:
+          method: post
+          path: registrarPlaneta
 
 resources:
   Resources:

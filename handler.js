@@ -1,6 +1,11 @@
 'use strict';
 
-const { registrarPeliculas, registrarPlanetas, obtenerPeliculas, obtenerPlanetas, obtenerPlaneta, obtenerPelicula } = require('./src/dynamoManager');
+const { v4: uuidv4 } = require('uuid');
+const queryString = require('query-string');
+// const middy = require("@middy/core");
+// const httpJSONBodyParser = require("@middy/http-json-body-parser");
+
+const { registrarPeliculas, registrarPlanetas, obtenerPeliculas, obtenerPlanetas, obtenerPlaneta, obtenerPelicula, guardarPlaneta, guardarPelicula } = require('./src/dynamoManager');
 const SWAPIService = require("./src/swapi.service");
 
 module.exports.loadData = async (event) => {
@@ -22,6 +27,50 @@ module.exports.loadData = async (event) => {
     }
   }
 };
+
+module.exports.registrarPelicula = async (event) => {
+  try {
+    const body = queryString.parse(event.body);
+    const data = {
+      ...body,
+      id: uuidv4(),
+      creado: new Date(),
+    }
+    await guardarPelicula(data);
+    return {
+      statusCode: 201,
+      body: JSON.stringify(data)
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      statusCode: 422,
+      body: error.message
+    }
+  }
+}
+
+module.exports.registrarPlaneta = async (event) => {
+  try {
+    const body = queryString.parse(event.body);
+    const data = {
+      ...body,
+      id: uuidv4(),
+      creado: new Date(),
+    }
+    await guardarPlaneta(data);
+    return {
+      statusCode: 201,
+      body: JSON.stringify(data)
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      statusCode: 422,
+      body: error.message
+    }
+  }
+}
 
 module.exports.obtenerPeliculas = async (event) => {  
   try {
